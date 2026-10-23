@@ -12,6 +12,6 @@ PLATFORM_VERSION = "14"  # Версия Android
 APP_PACKAGE = "com.csdroid.pkg"
 APP_ACTIVITY = "com.csdroid.pkg/.MainActivity"
 
-# Локаторы (можно вынести сюда же или в отдельный файл locators.py)
+# Локаторы
 CALENDAR_TEXT = "Календарь"
 LIST_CONTAINER_ID = "com.example.pnw:id/recycler_view_apps" # Пример ID списка

@@ -63,3 +63,4 @@ class TestCalendarSearch:
             )
 
         assert True, "Успех: Календарь открыт"
+

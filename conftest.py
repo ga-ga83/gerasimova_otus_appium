@@ -25,7 +25,6 @@ def driver():
         pass
 
 
-# НОВАЯ фикстура: wait
 @pytest.fixture(scope="function")
 def wait(driver):
     # 15 секунд — хороший баланс между стабильностью и скоростью при 8 ГБ RAM
