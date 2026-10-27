@@ -14,4 +14,5 @@ APP_ACTIVITY = "com.csdroid.pkg/.MainActivity"
 
 # Локаторы (можно вынести сюда же или в отдельный файл locators.py)
 CALENDAR_TEXT = "Календарь"
-LIST_CONTAINER_ID = "com.example.pnw:id/recycler_view_apps" # Пример ID списка
+LIST_CONTAINER_ID = "com.example.pnw:id/recycler_view_apps"
+CALENDAR_MONTH_TEXT = "Октябрь"
