@@ -3,9 +3,11 @@ from appium.webdriver.common.appiumby import AppiumBy
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from allure import step
+from config import CALENDAR_TEXT, CALENDAR_MONTH_TEXT
 
-CALENDAR_TEXT = "Календарь"
 MAX_SWIPES = 15
+SWIPE_DURATION_MS = 300
+POST_SWIPE_WAIT_SEC = 1.0
 
 
 class TestCalendarSearch:
@@ -17,18 +19,15 @@ class TestCalendarSearch:
         end_x = start_x
         end_y = window["height"] * 0.25
 
-        driver.swipe(start_x, start_y, end_x, end_y, duration=300)
-        time.sleep(1.5)  # Даём время подгрузить новые элементы
+        driver.swipe(start_x, start_y, end_x, end_y, duration=SWIPE_DURATION_MS)
+        time.sleep(POST_SWIPE_WAIT_SEC)
 
-    @step("Найти элемент 'Календарь' в списке всех TextView")
+    @step("Найти элемент 'Календарь' в списке TextView")
     def _find_calendar_by_text(self, driver, text):
-        # Получаем ВСЕ текстовые элементы на экране
         elements = driver.find_elements(AppiumBy.CLASS_NAME, "android.widget.TextView")
-
         for elem in elements:
             try:
                 elem_text = elem.text.strip()
-                # Проверяем, содержит ли текст нужное слово
                 if text in elem_text:
                     return elem
             except Exception:
@@ -41,17 +40,14 @@ class TestCalendarSearch:
 
         with step(f"Начать поиск элемента '{CALENDAR_TEXT}' (макс. {MAX_SWIPES} свайпов)"):
             while swipe_count < MAX_SWIPES:
-                # Пытаемся найти элемент через надёжный метод
                 calendar_elem = self._find_calendar_by_text(driver, CALENDAR_TEXT)
 
                 if calendar_elem and calendar_elem.is_displayed():
                     with step("Элемент найден — выполняем клик"):
                         calendar_elem.click()
-                        time.sleep(2)
-                        found = True
-                        break
+                    found = True
+                    break
 
-                # Если не нашли — делаем свайп и пробуем снова
                 with step(f"Свайп вниз №{swipe_count + 1} (осталось: {MAX_SWIPES - swipe_count - 1})"):
                     self._swipe_down(driver)
                 swipe_count += 1
@@ -62,5 +58,17 @@ class TestCalendarSearch:
                 "Проверь, не изменился ли интерфейс приложения."
             )
 
-        assert True, "Успех: Календарь открыт"
-
+        # --- ПРОВЕРКА РЕЗУЛЬТАТА: ищем текст месяца на экране ---
+        with step("Проверить, что экран календаря открылся (ожидание появления текста месяца)"):
+            try:
+                wait.until(
+                    EC.presence_of_element_located(
+                        (AppiumBy.XPATH, f"//android.widget.TextView[@text='{CALENDAR_MONTH_TEXT}']")
+                    )
+                )
+            except Exception as e:
+                raise AssertionError(
+                    f"Не удалось подтвердить открытие экрана календаря: не найден текст месяца '{CALENDAR_MONTH_TEXT}'. "
+                    "Возможно, месяц изменился или текст отображается иначе."
+                ) from e
+        assert True, "Экран календаря подтверждён появлением текста месяца"
